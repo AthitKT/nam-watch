@@ -5,6 +5,7 @@ import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { cn } from "@/lib/utils";
+import QueryProvider from '@/components/providers/query-provider';
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -31,11 +32,13 @@ export default async function RootLayout({
     <html lang={locale} className={cn("font-sans", geist.variable, ibmPlexSansThai.variable)}>
       <body className="font-sans bg-background text-text min-h-screen flex flex-col">
         <NextIntlClientProvider messages={messages}>
-          <Header />
-          <main className="flex-1 max-w-4xl w-full mx-auto p-4">
-            {children}
-          </main>
-          <Footer />
+          <QueryProvider>
+            <Header />
+            <main className="flex-1 max-w-4xl w-full mx-auto p-4">
+              {children}
+            </main>
+            <Footer />
+          </QueryProvider>
         </NextIntlClientProvider>
       </body>
     </html>
