@@ -220,6 +220,8 @@ GET https://api-v3.thaiwater.net/api/v1/thaiwater30/public/watergate_load
 }
 ```
 
+> **Note (Verified 2026-09-30):** The `station` object for watergates uses `tele_station_name`, `tele_station_lat`, and `tele_station_long` instead of `watergate_` prefixes.
+
 **Bangkok/Pathum Thani coverage:**
 - Bangkok (`province_code=10`): **84 watergate stations**
 - Pathum Thani (`province_code=13`): **13 watergate stations**
