@@ -23,11 +23,11 @@ export function useAllStations() {
       const { data: stations, error: stationsErr } = await supabase
         .from('stations')
         .select(`
-          id, name, lat, lng, type, warning_level, critical_level, bank_level, unit,
+          id, name, lat, lon, type, warning_level, critical_level, bank_level, unit,
           area:areas(name_th)
         `)
         .not('lat', 'is', null)
-        .not('lng', 'is', null);
+        .not('lon', 'is', null);
         
       if (stationsErr) throw stationsErr;
 
@@ -50,7 +50,7 @@ export function useAllStations() {
           id: s.id,
           name: s.name,
           lat: s.lat,
-          lng: s.lng,
+          lng: s.lon,
           type: s.type,
           area_name: s.area?.name_th || '',
           status: getStationStatus(s, reading),
