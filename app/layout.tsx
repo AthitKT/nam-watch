@@ -6,6 +6,8 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { cn } from "@/lib/utils";
 import QueryProvider from '@/components/providers/query-provider';
+import { OfflineBanner } from '@/components/ui/OfflineBanner';
+import { Metadata, Viewport } from 'next';
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -15,9 +17,13 @@ const ibmPlexSansThai = IBM_Plex_Sans_Thai({
   variable: '--font-ibm-plex-sans-thai',
 });
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'น้ำวอทช์',
   description: 'ติดตามระดับน้ำ กรุงเทพมหานคร และ ปทุมธานี',
+};
+
+export const viewport: Viewport = {
+  themeColor: '#2F80ED',
 };
 
 export default async function RootLayout({
@@ -33,6 +39,7 @@ export default async function RootLayout({
       <body className="font-sans bg-background text-text min-h-screen flex flex-col">
         <NextIntlClientProvider messages={messages}>
           <QueryProvider>
+            <OfflineBanner />
             <Header />
             <main className="flex-1 max-w-4xl w-full mx-auto p-4">
               {children}

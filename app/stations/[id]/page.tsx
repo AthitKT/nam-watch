@@ -3,7 +3,7 @@
 import { useStationDetails } from '@/hooks/useStationDetails';
 import { useStationHistory } from '@/hooks/useStationHistory';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { ChevronLeft, Clock } from 'lucide-react';
 import { use, useState } from 'react';
 import { StatusBadge } from '@/components/ui/StatusBadge';

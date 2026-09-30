@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { StatusBadge, TrendArrow } from '@/components/ui/StatusBadge';
 import type { StatusLevel } from '@/hooks/useAreas';
 import { useTranslations } from 'next-intl';

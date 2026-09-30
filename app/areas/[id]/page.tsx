@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { StationCard } from '@/components/area/StationCard';
 import { SaveAreaButton } from '@/components/ui/SaveAreaButton';
 import { SkeletonCard } from '@/components/ui/SkeletonCard';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { ChevronLeft } from 'lucide-react';
 import { use } from 'react';
 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { StatusBadge, TrendArrow, Trend } from '@/components/ui/StatusBadge';
 import { useTranslations } from 'next-intl';
 
