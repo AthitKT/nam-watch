@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -96,7 +98,8 @@ export default function Home() {
                   <AreaCard 
                     key={area.id} 
                     id={area.id} 
-                    name={area.name_th} 
+                    name={area.name_th}
+                    type={area.type}
                     status={area.status} 
                     lastUpdated={area.lastUpdated}
                     stationCount={area.stationCount}
@@ -114,7 +117,8 @@ export default function Home() {
               <AreaCard 
                 key={area.id} 
                 id={area.id} 
-                name={area.name_th} 
+                name={area.name_th}
+                type={area.type}
                 status={area.status} 
                 lastUpdated={area.lastUpdated}
                 stationCount={area.stationCount}

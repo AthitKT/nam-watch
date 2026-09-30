@@ -20,7 +20,13 @@
     "pin": "ติดตามพื้นที่นี้",
     "unpin": "เลิกติดตาม",
     "pinned": "พื้นที่ติดตาม",
-    "empty": "ยังไม่มีสถานีตรวจวัด"
+    "empty": "ยังไม่มีสถานีตรวจวัด",
+    "khet": "เขต",
+    "amphoe": "อำเภอ",
+    "riverStations": "แม่น้ำ (River)",
+    "canalStations": "คลอง (Canal)",
+    "watergateStations": "ประตูระบายน้ำ (Watergate)",
+    "back": "ย้อนกลับ"
   },
   "station": {
     "trendUp": "ระดับน้ำขึ้น",
@@ -32,6 +38,13 @@
     "levelM": "ระดับน้ำ (ม.)",
     "bankLevel": "ระดับตลิ่ง",
     "history24h": "24 ชั่วโมง",
-    "history7d": "7 วัน"
+    "history7d": "7 วัน",
+    "noData": "ไม่มีข้อมูล",
+    "backToArea": "ย้อนกลับ",
+    "lastUpdated": "อัปเดตล่าสุด: {time}",
+    "staleWarning": "ข้อมูลอาจล้าสมัย (ไม่มีการอัปเดตใน 1 ชั่วโมงที่ผ่านมา)",
+    "thresholdWarning": "ระดับเฝ้าระวัง",
+    "thresholdCritical": "ระดับวิกฤต",
+    "currentLevel": "ระดับน้ำปัจจุบัน"
   }
 }

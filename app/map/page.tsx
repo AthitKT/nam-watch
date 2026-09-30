@@ -1,17 +1,21 @@
-'use client';
-
-import dynamic from 'next/dynamic';
-
-const MapView = dynamic(
-  () => import('@/components/ui/MapView'),
-  { ssr: false, loading: () => <div className="h-[400px] w-full bg-gray-100 rounded-lg animate-pulse" /> }
-);
+import Link from 'next/link';
+import { ChevronLeft } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function MapPage() {
+  const t = useTranslations();
+
   return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-bold">แผนที่สถานีวัดระดับน้ำ</h1>
-      <MapView />
+    <div className="flex flex-col gap-6">
+      <Link href="/" className="inline-flex items-center text-muted hover:text-primary transition-colors">
+        <ChevronLeft className="w-5 h-5 mr-1" />
+        <span className="text-sm font-medium">ย้อนกลับ</span>
+      </Link>
+      <div className="bg-surface border border-dashed rounded-lg p-12 text-center flex flex-col gap-4">
+        <h1 className="text-xl font-bold text-primary-dark">แผนที่ (เร็วๆ นี้)</h1>
+        <p className="text-muted">กำลังพัฒนาระบบแผนที่...</p>
+        <p className="text-xs text-status-watch mt-4">{t('disclaimer')}</p>
+      </div>
     </div>
   );
 }
