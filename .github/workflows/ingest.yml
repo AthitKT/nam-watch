@@ -3,7 +3,7 @@ name: Ingest Data
 on:
   schedule:
     - cron: '*/30 * * * *'
-  workflow_dispatch: # Allow manual triggers
+  workflow_dispatch: {}
 
 jobs:
   ingest:
