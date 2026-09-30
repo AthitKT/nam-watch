@@ -47,6 +47,13 @@ export default function AreaPage({ params }: { params: Promise<{ id: string }> }
   const riverStations = stations.filter((s: any) => s.type === 'river');
   const canalStations = stations.filter((s: any) => s.type === 'canal');
   const watergateStations = stations.filter((s: any) => s.type === 'watergate');
+  let areaRiskLevel = 'nodata';
+  if (stations.length > 0) {
+    const statuses = stations.map((s: any) => s.status);
+    if (statuses.includes('critical')) areaRiskLevel = 'critical';
+    else if (statuses.includes('watch')) areaRiskLevel = 'watch';
+    else if (statuses.includes('normal')) areaRiskLevel = 'normal';
+  }
 
   return (
     <div className="flex flex-col gap-6 pb-12">
@@ -68,6 +75,20 @@ export default function AreaPage({ params }: { params: Promise<{ id: string }> }
       </div>
 
       <div className="flex flex-col gap-8">
+        {areaRiskLevel !== 'nodata' && (
+          <div className={`p-4 rounded-lg border shadow-sm ${
+            areaRiskLevel === 'critical' ? 'bg-red-50 border-red-200 text-status-critical' :
+            areaRiskLevel === 'watch' ? 'bg-orange-50 border-orange-200 text-status-watch' :
+            'bg-emerald-50 border-emerald-200 text-status-normal'
+          }`}>
+            <p className="text-sm font-medium leading-relaxed">
+              {areaRiskLevel === 'critical' && '⚠️ ระดับน้ำในแหล่งน้ำหลักวิกฤต เสี่ยงน้ำท่วมขังและน้ำเอ่อล้นในพื้นที่ลุ่มต่ำ'}
+              {areaRiskLevel === 'watch' && '⚡ แหล่งน้ำหลักอยู่ในเกณฑ์เฝ้าระวัง การระบายน้ำอาจชะลอตัวหากมีฝนตกหนัก'}
+              {areaRiskLevel === 'normal' && '✅ แหล่งน้ำหลักระบายน้ำได้ปกติ การระบายน้ำในพื้นที่ย่อยคล่องตัว'}
+            </p>
+          </div>
+        )}
+
         {stations.length === 0 && (
           <div className="bg-surface border border-dashed rounded-lg p-8 text-center text-muted">
             {tArea('empty')}

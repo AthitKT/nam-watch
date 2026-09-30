@@ -8,6 +8,7 @@ import { ChevronLeft, Clock } from 'lucide-react';
 import { use, useState } from 'react';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { StationChart } from '@/components/station/StationChart';
+import { CctvCard } from '@/components/station/CctvCard';
 import { getStationStatus } from '@/hooks/useAreas';
 import { format } from 'date-fns';
 import { th } from 'date-fns/locale';
@@ -47,6 +48,8 @@ export default function StationPage({ params }: { params: Promise<{ id: string }
       </div>
     );
   }
+
+  // console.log('[DEBUG Station CCTV]:', { id: station?.id, cctv_url: station?.cctv_url });
 
   const latestReading = history && history.length > 0 ? history[history.length - 1] : null;
   const status = getStationStatus(station, latestReading);
@@ -176,6 +179,10 @@ export default function StationPage({ params }: { params: Promise<{ id: string }
               )}
             </div>
           </div>
+
+          {station.cctv_url && station.cctv_url.trim() !== '' && (
+            <CctvCard url={station.cctv_url} stationName={station.name} />
+          )}
         </div>
       )}
     </div>
