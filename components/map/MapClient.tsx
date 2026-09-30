@@ -89,9 +89,12 @@ export default function MapClient() {
                   <div className="flex flex-col">
                     <span className="text-xs text-muted">ระดับน้ำปัจจุบัน</span>
                     <span className="font-bold text-lg text-primary-dark">
-                      {station.latest_reading?.level !== null && station.latest_reading?.level !== undefined 
-                        ? station.latest_reading.level.toFixed(2) 
-                        : '-'}
+                      {(() => {
+                        const r = station.latest_reading;
+                        if (!r) return '-';
+                        const val = r.level ?? r.water_level ?? r.level_in ?? r.value;
+                        return val !== null && val !== undefined ? val.toFixed(2) : '-';
+                      })()}
                     </span>
                   </div>
                   <StatusBadge status={station.status} />
@@ -99,7 +102,7 @@ export default function MapClient() {
 
                 <Link 
                   href={`/stations/${encodeURIComponent(station.id)}`}
-                  className="mt-2 w-full bg-primary text-white text-center text-xs py-2 rounded-md hover:bg-primary-dark transition-colors"
+                  className="mt-2 w-full bg-primary !text-white font-medium text-center text-xs py-2 rounded-md hover:bg-primary-dark transition-colors inline-block"
                 >
                   ดูรายละเอียด
                 </Link>

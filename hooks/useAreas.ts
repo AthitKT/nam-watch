@@ -8,16 +8,28 @@ export type StatusLevel = 'normal' | 'watch' | 'critical' | 'nodata';
 export function getStationStatus(station: any, reading: any): StatusLevel {
   if (!reading || !reading.ts) return 'nodata';
   
-  const isStale = (new Date().getTime() - new Date(reading.ts).getTime()) > 24 * 60 * 60 * 1000;
+  // Use absolute time difference for staleness
+  const now = new Date().getTime();
+  const readingTime = new Date(reading.ts).getTime();
+  // Expanded to 7 days (168 hours) because ThaiWater canal readings often lag by 48-72 hours
+  const isStale = (now - readingTime) > 7 * 24 * 60 * 60 * 1000;
+  
+  // Normalize the reading level by checking multiple possible field names
+  const lvl = reading.level ?? reading.water_level ?? reading.level_in ?? reading.value ?? null;
+  const lvlOut = reading.level_out ?? null;
+  
+  // If the reading has NO levels whatsoever, it's effectively no data
+  if (lvl === null && lvlOut === null) return 'nodata';
+  
   if (isStale) return 'nodata';
 
-  if (station.critical_level !== null && reading.level !== null && reading.level >= station.critical_level) {
+  if (station.critical_level !== null && lvl !== null && lvl >= station.critical_level) {
     return 'critical';
   }
-  if (station.warning_level !== null && reading.level !== null && reading.level >= station.warning_level) {
+  if (station.warning_level !== null && lvl !== null && lvl >= station.warning_level) {
     return 'watch';
   }
-  if (station.bank_level !== null && reading.level !== null && reading.level >= station.bank_level) {
+  if (station.bank_level !== null && lvl !== null && lvl >= station.bank_level) {
     return 'critical'; // Exceeds bank
   }
   if (reading.situation_level === 4 || reading.situation_level === 5) return 'critical';
@@ -57,7 +69,7 @@ export function useAreas(province: 'BKK' | 'PTT') {
         const { data: r, error: rErr } = await supabase
           .from('latest_readings')
           .select('*')
-          .in('station_id', stationIds);
+          .limit(5000);
         if (rErr) throw rErr;
         readings = r || [];
       }
@@ -66,7 +78,8 @@ export function useAreas(province: 'BKK' | 'PTT') {
       return areas.map(area => {
         const areaStations = stations.filter(s => s.area_id === area.id);
         const areaStatuses = areaStations.map(station => {
-          const reading = readings.find(r => r.station_id === station.id);
+          const normalizeId = (id: string) => id.replace(/^tw-/, '');
+          const reading = readings.find(r => normalizeId(r.station_id) === normalizeId(station.id));
           return getStationStatus(station, reading);
         });
 

@@ -10,12 +10,17 @@ export function StationCard({ station }: { station: any }) {
   
   const isPtt = station.type === 'watergate'; // In our db, PTT mostly uses watergates or we can check province if available.
   const hasReading = !!station.reading;
-  const isStale = hasReading && (new Date().getTime() - new Date(station.reading.ts).getTime()) > 24 * 60 * 60 * 1000;
+  // Expanded to 7 days (168 hours) to match the Map markers
+  const isStale = hasReading && (new Date().getTime() - new Date(station.reading.ts).getTime()) > 7 * 24 * 60 * 60 * 1000;
   
   const trend: Trend = 'unknown';
-  if (hasReading && station.reading.trend !== undefined) {
-    // Actually the API doesn't provide trend directly, we can infer it or we just omit for now, or just leave as unknown
-    // Let's omit trend icon if we don't have enough data points, or just render it if we compute it.
+  
+  // Normalize fields
+  let val = null;
+  let valOut = null;
+  if (hasReading) {
+    val = station.reading.level ?? station.reading.water_level ?? station.reading.level_in ?? station.reading.value ?? null;
+    valOut = station.reading.level_out ?? null;
   }
 
   return (
@@ -46,13 +51,13 @@ export function StationCard({ station }: { station: any }) {
                 <div className="flex-1 bg-surface p-2 rounded-md">
                   <p className="text-xs text-muted mb-1">{t('gateIn')}</p>
                   <p className="font-semibold text-lg">
-                    {station.reading.level !== null ? station.reading.level.toFixed(2) : '-'} <span className="text-xs font-normal text-muted">{station.unit}</span>
+                    {val !== null ? val.toFixed(2) : '-'} <span className="text-xs font-normal text-muted">{station.unit}</span>
                   </p>
                 </div>
                 <div className="flex-1 bg-surface p-2 rounded-md">
                   <p className="text-xs text-muted mb-1">{t('gateOut')}</p>
                   <p className="font-semibold text-lg">
-                    {station.reading.level_out !== null ? station.reading.level_out.toFixed(2) : '-'} <span className="text-xs font-normal text-muted">{station.unit}</span>
+                    {valOut !== null ? valOut.toFixed(2) : '-'} <span className="text-xs font-normal text-muted">{station.unit}</span>
                   </p>
                 </div>
               </>
@@ -61,7 +66,7 @@ export function StationCard({ station }: { station: any }) {
                 <div>
                   <p className="text-xs text-muted mb-1">{t(station.unit.includes('MSL') ? 'levelMsl' : 'levelM')}</p>
                   <p className="font-semibold text-xl text-primary-dark">
-                    {station.reading.level !== null ? station.reading.level.toFixed(2) : '-'} 
+                    {val !== null ? val.toFixed(2) : '-'} 
                     <span className="text-sm font-normal text-muted ml-1">{station.unit}</span>
                   </p>
                 </div>

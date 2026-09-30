@@ -52,8 +52,9 @@ export default function StationPage({ params }: { params: Promise<{ id: string }
   const status = getStationStatus(station, latestReading);
   const isPtt = station.type === 'watergate';
   
-  const isStale = latestReading && (new Date().getTime() - new Date(latestReading.ts).getTime()) > 60 * 60 * 1000;
-  const isNoData = !latestReading || (new Date().getTime() - new Date(latestReading.ts).getTime()) > 24 * 60 * 60 * 1000;
+  const diffHours = latestReading ? (new Date().getTime() - new Date(latestReading.ts).getTime()) / (60 * 60 * 1000) : 0;
+  const isStale = latestReading && diffHours > 24;
+  const isNoData = !latestReading;
 
   return (
     <div className="flex flex-col gap-6 pb-12">
@@ -85,14 +86,17 @@ export default function StationPage({ params }: { params: Promise<{ id: string }
                 <div className="flex-1 bg-surface p-4 rounded-md">
                   <p className="text-sm text-muted mb-1">{t('gateIn')}</p>
                   <p className="font-bold text-3xl text-primary-dark">
-                    {latestReading.level !== null ? latestReading.level.toFixed(2) : '-'}
+                    {(() => {
+                      const val = latestReading.level ?? latestReading.water_level ?? latestReading.level_in ?? latestReading.value;
+                      return val !== null && val !== undefined ? val.toFixed(2) : '-';
+                    })()}
                   </p>
                   <p className="text-sm text-muted mt-1">{station.unit}</p>
                 </div>
                 <div className="flex-1 bg-surface p-4 rounded-md">
                   <p className="text-sm text-muted mb-1">{t('gateOut')}</p>
                   <p className="font-bold text-3xl text-primary-dark">
-                    {latestReading.level_out !== null ? latestReading.level_out.toFixed(2) : '-'}
+                    {latestReading.level_out !== null && latestReading.level_out !== undefined ? latestReading.level_out.toFixed(2) : '-'}
                   </p>
                   <p className="text-sm text-muted mt-1">{station.unit}</p>
                 </div>
@@ -102,7 +106,10 @@ export default function StationPage({ params }: { params: Promise<{ id: string }
                 <p className="text-sm text-muted">{t(station.unit.includes('MSL') ? 'levelMsl' : 'levelM')}</p>
                 <div className="flex items-baseline gap-2">
                   <span className="font-bold text-5xl text-primary-dark tracking-tight">
-                    {latestReading.level !== null ? (latestReading.level > 0 ? '+' : '') + latestReading.level.toFixed(2) : '-'}
+                    {(() => {
+                      const val = latestReading.level ?? latestReading.water_level ?? latestReading.level_in ?? latestReading.value;
+                      return val !== null && val !== undefined ? (val > 0 ? '+' : '') + val.toFixed(2) : '-';
+                    })()}
                   </span>
                   <span className="text-lg text-muted font-medium">{station.unit}</span>
                 </div>
@@ -139,7 +146,7 @@ export default function StationPage({ params }: { params: Promise<{ id: string }
               {isStale && (
                 <div className="flex items-center gap-1 text-xs text-status-watch mt-1">
                   <Clock className="w-3 h-3" />
-                  <span>{t('staleWarning')}</span>
+                  <span>ข้อมูลล่าสุดเมื่อ {Math.floor(diffHours / 24)} วันก่อน</span>
                 </div>
               )}
             </div>

@@ -37,7 +37,8 @@ export function useAreaDetails(areaId: string) {
       }
 
       const stationsWithData = stations.map(station => {
-        const reading = readings.find(r => r.station_id === station.id) || null;
+        const normalizeId = (id: string) => id.replace(/^tw-/, '');
+        const reading = readings.find(r => normalizeId(r.station_id) === normalizeId(station.id)) || null;
         return {
           ...station,
           reading,

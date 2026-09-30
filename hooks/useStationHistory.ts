@@ -8,19 +8,21 @@ export function useStationHistory(stationId: string, days: number = 1) {
       if (!stationId) return null;
       const supabase = createClient();
       
-      // Calculate time boundary
-      const dateBoundary = new Date();
-      dateBoundary.setDate(dateBoundary.getDate() - days);
+      // Fetch latest N records instead of strict time boundary to handle stale/mock data
+      // Assume ~48 records for 24h, ~336 records for 7 days
+      const limit = days === 1 ? 48 : 336;
       
       const { data, error } = await supabase
         .from('readings')
         .select('*')
         .eq('station_id', stationId)
-        .gte('ts', dateBoundary.toISOString())
-        .order('ts', { ascending: true }); // Chronological for charts
+        .order('ts', { ascending: false })
+        .limit(limit);
         
       if (error) throw error;
-      return data || [];
+      
+      // Reverse array to render chronologically in Recharts
+      return (data || []).reverse();
     },
     enabled: !!stationId
   });

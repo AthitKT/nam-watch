@@ -35,17 +35,17 @@ export function useAllStations() {
       
       let readings: any[] = [];
       if (stationIds.length > 0) {
-        // We fetch chunks if needed, but <1000 stations is fine for a single IN clause mostly
         const { data: r, error: rErr } = await supabase
           .from('latest_readings')
           .select('*')
-          .in('station_id', stationIds);
+          .limit(5000);
         if (rErr) throw rErr;
         readings = r || [];
       }
 
-      return stations.map((s: any) => {
-        const reading = readings.find(r => r.station_id === s.id);
+      const mappedStations = stations.map((s: any) => {
+        const normalizeId = (id: string) => id.replace(/^tw-/, '');
+        const reading = readings.find(r => normalizeId(r.station_id) === normalizeId(s.id));
         return {
           id: s.id,
           name: s.name,
@@ -57,6 +57,23 @@ export function useAllStations() {
           latest_reading: reading || null
         };
       });
+
+      console.log(`[Map Loader] Total stations fetched: ${stations.length}`);
+      console.log(`[Map Loader] Total readings fetched: ${readings.length}`);
+      
+      const sampleReading = readings[0];
+      if (sampleReading) {
+        console.log(`[Map Loader] Sample reading ts: ${sampleReading.ts}`);
+        console.log(`[Map Loader] Now: ${new Date().toISOString()}`);
+        const diffHours = (new Date().getTime() - new Date(sampleReading.ts).getTime()) / (1000 * 60 * 60);
+        console.log(`[Map Loader] Sample age in hours: ${diffHours.toFixed(2)}`);
+      }
+
+      const activeCount = mappedStations.filter(s => s.status !== 'nodata').length;
+      const grayCount = mappedStations.filter(s => s.status === 'nodata').length;
+      console.log(`[Map Loader] Active status: ${activeCount}, Gray/Unknown: ${grayCount}`);
+
+      return mappedStations;
     }
   });
 }
