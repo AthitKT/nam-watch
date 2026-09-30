@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nam-Watch (น้ำวอทช์)
 
-## Getting Started
+A public, mobile-first web app that lets people monitor water levels in Bangkok and Pathum Thani.
+Data is provided by the Thai National Water Data Warehouse (คลังข้อมูลน้ำแห่งชาติ, HII).
 
-First, run the development server:
+**Disclaimer:** ข้อมูลเพื่อการติดตามเท่านั้น ไม่ใช่การประกาศเตือนภัยอย่างเป็นทางการ
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Prerequisites
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Node.js 20.x
+- pnpm 9.x+ (or 12.x)
+- Supabase account (free tier)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Local Development Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Install dependencies:**
+   ```bash
+   pnpm install
+   ```
 
-## Learn More
+2. **Environment Variables:**
+   Copy `.env.example` to `.env.local` and fill in your Supabase details.
+   ```bash
+   cp .env.example .env.local
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+3. **Run the development server:**
+   ```bash
+   pnpm dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Testing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Lint:** `pnpm lint`
+- **Typecheck:** `pnpm typecheck`
+- **Unit Tests:** `pnpm test` (or `pnpm test:run` for CI)
 
-## Deploy on Vercel
+## Architecture
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Frontend:** Next.js (App Router), Tailwind CSS, shadcn/ui, Recharts, react-leaflet
+- **Database:** Supabase (Postgres)
+- **Data Ingestion:** GitHub Actions cron job running `scripts/ingest.ts` (every 30 mins)
