@@ -49,8 +49,6 @@ export default function StationPage({ params }: { params: Promise<{ id: string }
     );
   }
 
-  // console.log('[DEBUG Station CCTV]:', { id: station?.id, cctv_url: station?.cctv_url });
-
   const latestReading = history && history.length > 0 ? history[history.length - 1] : null;
   const status = getStationStatus(station, latestReading);
   const isPtt = station.type === 'watergate';

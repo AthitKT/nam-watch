@@ -8,15 +8,14 @@ import { th } from 'date-fns/locale';
 export function CctvCard({ url, stationName }: { url: string; stationName: string }) {
   const [timestamp, setTimestamp] = useState<number | null>(null);
   const [hasError, setHasError] = useState(false);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Avoid SSR hydration mismatch and setup 5-minute interval
   useEffect(() => {
     setTimestamp(Date.now());
 
     const intervalId = setInterval(() => {
-      setIsRefreshing(true);
+      // Don't set isLoading(true) here to prevent flashing
       setHasError(false);
       setTimestamp(Date.now());
     }, 300000); // 5 minutes
@@ -27,10 +26,12 @@ export function CctvCard({ url, stationName }: { url: string; stationName: strin
   if (!url || url.trim() === '') return null;
 
   const handleReload = () => {
-    setIsRefreshing(true);
+    setIsLoading(true);
     setHasError(false);
     setTimestamp(Date.now());
   };
+
+  const proxySrc = timestamp ? `/api/cctv-proxy?url=${encodeURIComponent(url)}&t=${timestamp}` : '';
 
   return (
     <div className="bg-white border rounded-lg overflow-hidden shadow-sm flex flex-col">
@@ -52,42 +53,41 @@ export function CctvCard({ url, stationName }: { url: string; stationName: strin
             className="p-1.5 text-muted hover:text-primary transition-colors rounded-md hover:bg-white border"
             title="โหลดภาพใหม่"
           >
-            <RefreshCw className={`w-4 h-4 ${(isInitialLoading || isRefreshing) ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
           </button>
         </div>
       </div>
       
       <div className="relative w-full aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-        {hasError ? (
-          <div className="flex flex-col items-center gap-2 text-muted p-4 text-center z-20">
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
+            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        )}
+
+        {hasError && !isLoading ? (
+          <div className="flex flex-col items-center gap-2 text-muted p-4 text-center z-20 absolute inset-0 justify-center bg-gray-100">
             <Camera className="w-8 h-8 opacity-50" />
             <p className="text-sm">ไม่สามารถเชื่อมต่อสัญญาณกล้องได้ในขณะนี้</p>
           </div>
-        ) : (
-          <>
-            {isInitialLoading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
-                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            )}
-            {timestamp !== null && (
-              <img 
-                src={`/api/cctv-proxy?url=${encodeURIComponent(url)}&t=${timestamp}`} 
-                alt={`CCTV - ${stationName}`}
-                className={`w-full h-full object-cover transition-opacity duration-300 ${isInitialLoading ? 'opacity-0' : 'opacity-100'}`}
-                onLoad={() => {
-                  setIsInitialLoading(false);
-                  setIsRefreshing(false);
-                }}
-                onError={() => {
-                  setIsInitialLoading(false);
-                  setIsRefreshing(false);
-                  setHasError(true);
-                }}
-                referrerPolicy="no-referrer"
-              />
-            )}
-          </>
+        ) : null}
+
+        {timestamp !== null && (
+          <img 
+            src={proxySrc} 
+            alt={`CCTV - ${stationName}`}
+            className={`w-full h-full object-cover transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+            onLoad={() => {
+              setIsLoading(false);
+              setHasError(false);
+            }}
+            onError={(e) => {
+              console.error('Image load failed:', e);
+              setIsLoading(false);
+              setHasError(true);
+            }}
+            referrerPolicy="no-referrer"
+          />
         )}
       </div>
     </div>
